@@ -1,41 +1,52 @@
-export const fetchLocalMessage = (groupId)=>{
-    const messages = localStorage.getItem("messages")
-    return JSON.parse(messages)||[]
+export const fetchLocalMessage = (groupId) => {
+    const allGroupMessages = localStorage.getItem('group_messages');
+    const groupMessages = allGroupMessages ? JSON.parse(allGroupMessages) : {};
+    return groupMessages[groupId] || [];;
 }
+export const storeMessageLocalStorage = (apiMessages, groupId, sender_name) => {
+    try {
+        let messagesToStore = [];
 
-export const storeMessageLocalStorage = (response)=>{
-try{
-    const {id,sender_id,group_id,message} = response.data.message;
-    try{
-    const storedMessages = localStorage.getItem('messages');
-    const existingMessages = storedMessages ? JSON.parse(storedMessages) : [];
-        const messageObject = {
-            "id": id,
-            "group_id": group_id,
-            "sender_id": sender_id,
-            "message": message
-        }
-        if (existingMessages.length < 10) {
-            existingMessages.push(messageObject)
+        if (apiMessages instanceof Array) {
+            // If the response has a message array, iterate through it
+            messagesToStore = apiMessages.map(message => ({
+                "id": message.id,
+                "sender_id": message.sender_id,
+                "sender_name": message['User.sender_name'],
+                "message": message.message,
+                "timestamp": message.timestamp
+            }));
         } else {
-            existingMessages.shift();
-            // Push the new message
-            existingMessages.push(messageObject);
+            // If the response has a single message object
+            const { id, sender_id, message, timestamp } = apiMessages;
+            messagesToStore = [{
+                "id": id,
+                "sender_id": sender_id,
+                "sender_name": sender_name,
+                "message": message,
+                "timestamp": timestamp
+            }];
         }
 
-        // Convert the array back to a JSON string
-        const updatedMessages = JSON.stringify(existingMessages);
-        localStorage.setItem('messages', updatedMessages);
-    }catch(error){
-        console.log(error)
+        const allGroupMessages = localStorage.getItem('group_messages');
+        const groupMessages = allGroupMessages ? JSON.parse(allGroupMessages) : {};
+
+        if (!groupMessages[groupId]) {
+            groupMessages[groupId] = [];
+        }
+
+        groupMessages[groupId].unshift(...messagesToStore);
+
+        // Ensure that only the last 5 messages are stored for each group
+        const maxLength = 10;
+        if (groupMessages[groupId].length > maxLength) {
+            groupMessages[groupId].splice(maxLength);
+        }
+
+        const updatedMessages = JSON.stringify(groupMessages);
+        localStorage.setItem('group_messages', updatedMessages);
+    } catch (error) {
+        console.log(error);
     }
-    
+};
 
-   
-    
-
-}catch(error){
-    console.log("Message Storing in failed")
-    throw new Error("Error")
-}
-}

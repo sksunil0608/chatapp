@@ -5,10 +5,12 @@ const api = axios.create({
     baseURL: apiConfig.baseURL,
 });
 
-export const getGroupMessages = async (groupId, token) => {
+
+export const getGroupMessages = async (groupId, token, startIndex = 0) => {
     try {
         const response = await api.get(`/groups/${groupId}/messages`, {
             headers: { Authorization: token },
+            params: { startIndex }, // Include the startIndex as a query parameter
         });
         return response.data.message;
     } catch (error) {
@@ -16,6 +18,7 @@ export const getGroupMessages = async (groupId, token) => {
         throw error;
     }
 };
+
 
 export const postGroupMessage = async (groupId, messageDetails, token) => {
     try {

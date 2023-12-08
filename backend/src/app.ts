@@ -15,6 +15,10 @@ import groupRoutes from "./routes/group"
 import groupmessageRoutes from "./routes/groupmessage"
 import contactlistRoutes from "./routes/contactlist"
 import groupmemberRoutes from "./routes/groupmember"
+//Socket .io
+import { createServer } from "http";
+import { Server as SocketIOServer } from "socket.io";
+import { setupGroupChatSocket } from './sockets/groupchat_socket';
 
 const app = express()
 app.use(
@@ -27,6 +31,17 @@ app.use(
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+//Socket.io
+const httpServer = createServer(app);
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  }
+});
+setupGroupChatSocket(io);
+//socket.io end
 
 app.use(userRoutes);
 app.use(groupRoutes)
@@ -58,9 +73,17 @@ UserMessage.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
 UserMessage.belongsTo(User, { foreignKey: 'receiver_id', as: 'receiver' });
 
 
-sequelize
-  .sync()
-  .then(() => {
-    app.listen(process.env.PORT || 4000);
-  })
-  .catch((err) => console.log(err));
+async function startServer() {
+  try {
+    // Sync Database
+    await sequelize.sync();
+
+    const PORT = process.env.PORT || 4000;
+    httpServer.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+startServer();

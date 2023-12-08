@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
+import { Socket } from 'socket.io';
 import GroupMessage from "../models/groupmessage";
+import User from "../models/user";
+import sequelize from "../util/db";
 
 function isInValidString(str: string) {
     return str === undefined || str.length === 0 ? true : false;
@@ -36,14 +39,67 @@ export const postCreateGroupMessage = async (req: Request, res: Response) => {
     }
 }
 
+// Backend API call
 export const getGroupMessages = async (req: Request, res: Response) => {
     try {
         const groupId = req.params.groupId;
-        const response = await GroupMessage.findAll({ where: { group_id: groupId } });
-        res.status(200).json({ message: response })
-    }
-    catch (error) {
+        const startIndex = parseInt(req.query.startIndex as string, 10) || 0; // Parse startIndex from query parameters
+        const response = await GroupMessage.findAll({
+            where: { group_id: groupId },
+            include: [{
+                model: User,
+                attributes: [
+                    [sequelize.fn('CONCAT', sequelize.col('User.fname'), ' ', sequelize.col('User.lname')), 'sender_name']
+                ],
+
+            }],
+            attributes: [
+                'id',
+                'sender_id',
+                'message',
+                'timestamp',
+            ],
+            order: [['timestamp', 'DESC']],
+            raw: true,
+            offset: startIndex,
+            limit: 10
+        });
+
+        res.status(200).json({ message: response });
+    } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
-}
+};
+
+
+
+export const getMoreGroupMessagesSockets = async (socket: Socket, groupId: string, startIndex: number) => {
+    try {
+        const moreMessages = await GroupMessage.findAll({
+            where: { group_id: groupId },
+            include: [{
+                model: User,
+                attributes: [
+                    [sequelize.fn('CONCAT', sequelize.col('User.fname'), ' ', sequelize.col('User.lname')), 'sender_name']
+                ],
+            }],
+            attributes: [
+                'id',
+                'sender_id',
+                'message',
+                'timestamp',
+            ],
+            order: [['timestamp', 'DESC']],
+            raw: true,
+            offset: startIndex,
+            limit: 10
+        });
+
+        // Emit the additional messages to the client
+        socket.emit('more-messages', moreMessages);
+    } catch (error) {
+        console.error('Error fetching more messages:', error);
+        socket.emit('error', "Internal Server Error");
+    }
+};

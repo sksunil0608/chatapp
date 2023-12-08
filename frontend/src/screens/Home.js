@@ -42,8 +42,9 @@ export default function Home() {
 
   useEffect(() => {
     updateGroups(); // Fetch groups initially
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
+  
   // Create Group Popup thing
   const [isCreateGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const openCreateGroupPopup = () => {
