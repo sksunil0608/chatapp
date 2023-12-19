@@ -114,8 +114,8 @@ export default function GroupMember({ onClose, onSuccess, selectedGroup }) {
 
   return (
     <div>
-      <div className="fixed inset-0 bg-7a7d85 bg-opacity-75 z-50 mt-24">
-        <div className="w-5/6 border h-fit bg-e6ffff border-red-400 rounded-lg mt-2 mx-auto">
+      <div className="fixed inset-0 bg-gray-400 bg-opacity-75 z-50 mt-24">
+        <div className="w-5/6 border h-fit bg-teal-100 border-red-400 rounded-lg mt-2 mx-auto">
           <div className="mt-2 text-center text-lg text-decoration-line: underline mx-44 py-1">
             Group Info
           </div>
@@ -180,9 +180,9 @@ export default function GroupMember({ onClose, onSuccess, selectedGroup }) {
                           selectedMember.id === member.id && (
                             <div>
                               {isAdminActionMenuOpen && (
-                                <div className="fixed bg-7a7d85 bg-opacity-75 z-50">
+                                <div className="fixed bg-gray-400 bg-opacity-75 z-50">
                                   {/* Admin Action Menu */}
-                                  <div className="flex items-center bg-ffffff w-36 h-20 p-1 rounded-sm">
+                                  <div className="flex items-center bg-white w-36 h-20 p-1 rounded-sm">
                                     <ul className="mx-auto">
                                       {/* Make Admin Area */}
                                       <li onClick={handleMakeGroupAdmin}>
@@ -214,7 +214,7 @@ export default function GroupMember({ onClose, onSuccess, selectedGroup }) {
           {/* Action Buttons */}
           <div className="flex bottom-0 justify-end">
             <button
-              className="bg-eb6134 px-3 rounded-sm py-1.5 text-white"
+              className="bg-orange-500 px-3 rounded-sm py-1.5 text-white"
               type="button"
               onClick={onClose}
             >

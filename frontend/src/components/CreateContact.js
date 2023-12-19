@@ -29,10 +29,10 @@ export default function CreateContact({ onClose, onSuccess }) {
     };
     return (
         <div>
-            <div className="col-span-6 md:col-span-2 lg:col-span-2 xl:col-span-2 bg-0000ff bg-opacity-5">
+            <div className="col-span-6 md:col-span-2 lg:col-span-2 xl:col-span-2 bg-blue-100">
                 <div className="container h-screen max-h-screen overflow-y-auto">
-                    <div className=" inset-0 bg-7a7d85 bg-opacity-75 z-50 mx-1">
-                        <div className=" border bg-e6ffff border-red-400 rounded-lg  mx-auto">
+                    <div className=" inset-0 bg-gray-400 bg-opacity-75 z-50 mx-1">
+                        <div className=" border bg-teal-100 border-red-400 rounded-lg  mx-auto">
                             <form className="mx-auto p-2" onSubmit={(e) => e.preventDefault()}>
                                 {/*  Name */}
                                 <div className=" mb-2">
@@ -86,7 +86,7 @@ export default function CreateContact({ onClose, onSuccess }) {
                                 </div>
                                 <div className="flex justify-center">
                                     <button
-                                        className="px-4 py-1 bg-eb6134 text-white rounded-lg mb-4 mt-2"
+                                        className="px-4 py-1 bg-orange-500 text-white rounded-lg mb-4 mt-2"
                                         type="submit"
                                         onClick={handleCreateContact}
                                     >
@@ -96,7 +96,7 @@ export default function CreateContact({ onClose, onSuccess }) {
                             </form>
                             <div className="flex justify-end">
                                 <button
-                                    className=" bg-eb6134 px-3 rounded-sm py-1.5 text-white"
+                                    className=" bg-orange-500 px-3 rounded-sm py-1.5 text-white"
                                     type="button"
                                     onClick={onClose}
                                 >

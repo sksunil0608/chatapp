@@ -9,6 +9,7 @@ import Group from "./models/group";
 import GroupMember from "./models/groupmember";
 import GroupMessage from "./models/groupmessage";
 import ContactList from "./models/contactlist";
+import GroupFileAttachment from "./models/groupfileattachment";
 //Routes Import
 import userRoutes from "./routes/user";
 import groupRoutes from "./routes/group"
@@ -19,6 +20,7 @@ import groupmemberRoutes from "./routes/groupmember"
 import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import { setupGroupChatSocket } from './sockets/groupchat_socket';
+import { ForeignKey } from "sequelize-typescript";
 
 const app = express()
 app.use(
@@ -69,9 +71,12 @@ GroupMessage.belongsTo(Group, { foreignKey: 'group_id' });
 GroupMessage.belongsTo(User, { foreignKey: 'sender_id' });
 
 // UserMessage associations
-UserMessage.belongsTo(User, { foreignKey: 'sender_id', as: 'sender' });
-UserMessage.belongsTo(User, { foreignKey: 'receiver_id', as: 'receiver' });
+UserMessage.belongsTo(User, { foreignKey: 'sender_id' });
+UserMessage.belongsTo(Group, { foreignKey: 'group_id' });
 
+//Group File Attachments Associations
+GroupFileAttachment.belongsTo(User, { foreignKey: 'sender_id' })
+GroupFileAttachment.belongsTo(Group, { foreignKey: 'group_id' })
 
 async function startServer() {
   try {

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && nodemon dist/app.js"
+    "start": "tsc && nodemon dist/app.js",
+    "server": "nodemon dist/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,9 +14,11 @@
     "@types/cors": "^2.8.17",
     "@types/crypto-js": "^4.2.1",
     "@types/jsonwebtoken": "^9.0.5",
+    "@types/multer": "^1.4.11",
     "@types/request": "^2.48.12",
     "@types/sequelize": "^4.28.19",
     "@types/socket.io": "^3.0.2",
+    "aws-sdk": "^2.1518.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -23,6 +26,7 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.6.5",
     "nodemon": "^3.0.1",
     "path": "^0.12.7",

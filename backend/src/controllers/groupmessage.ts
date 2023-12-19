@@ -65,7 +65,7 @@ export const getGroupMessages = async (req: Request, res: Response) => {
             limit: 10
         });
 
-        res.status(200).json({ message: response });
+        res.status(200).json({ messages: response });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Internal Server Error" });

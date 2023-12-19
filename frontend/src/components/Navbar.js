@@ -8,7 +8,7 @@ export default function Navbar() {
   };
   return (
     <div>
-      <nav className="bg-eb6134 p-4">
+      <nav className="bg-orange-500 p-4">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="text-white font-semibold text-lg ml-10 mr-10">
@@ -83,20 +83,20 @@ export default function Navbar() {
             </button>
             {/* Offcanvas menu */}
             {isMenuOpen && (
-              <div className="fixed inset-0  bg-7a7d85 bg-opacity-75 z-50 mt-16">
+              <div className="fixed inset-0  bg-gray-400 bg-opacity-75 z-50 mt-16">
                 <div className="flex items-start justify-end h-screen">
-                  <div className="bg-ffffff w-72 h-96 p-6 rounded-lg">
+                  <div className="bg-white w-72 h-96 p-6 rounded-lg">
                     <ul className="space-y-4">
-                      <li className="hover:bg-33caff hover:border-2 hover:rounded-lg hover:py-1.5 hover:px-2">
+                      <li className="hover:bg-sky-400 hover:border-2 hover:rounded-lg hover:py-1.5 hover:px-2">
                         <NavLink
                           to="/"
-                          className="text-gray-800 hover:text-eb6134 transition duration-300"
+                          className="text-gray-800 hover:text-bg-orange-500 transition duration-300"
                           onClick={toggleMenu}
                         >
                           Chat
                         </NavLink>
                       </li>
-                      <li className="hover:bg-33caff hover:border-2 hover:rounded-lg hover:py-1.5 hover:px-2">
+                      <li className="hover:bg-sky-400 hover:border-2 hover:rounded-lg hover:py-1.5 hover:px-2">
                         <NavLink
                           to="/login"
                           className="text-gray-800 transition duration-300"
@@ -105,10 +105,10 @@ export default function Navbar() {
                           Sign In
                         </NavLink>
                       </li>
-                      <li className="hover:bg-33caff hover:border-2 hover:rounded-lg hover:py-1.5 hover:px-2">
+                      <li className="hover:bg-sky-400 hover:border-2 hover:rounded-lg hover:py-1.5 hover:px-2">
                         <NavLink
                           to="/signup"
-                          className="text-gray-800 hover:text-eb6134 transition duration-300"
+                          className="text-gray-800 hover:text-bg-orange-500 transition duration-300"
                           onClick={toggleMenu}
                         >
                           Signup

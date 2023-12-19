@@ -29,8 +29,8 @@ export default function Creategroup({ onClose, onSuccess }) {
   };
   return (
     <div>
-      <div className="fixed inset-0 bg-7a7d85 bg-opacity-75 z-50 mt-24">
-        <div className="w-5/6 border bg-e6ffff border-red-400 rounded-lg  mx-auto">
+      <div className="fixed inset-0 bg-gray-400 bg-opacity-75 z-50 mt-24">
+        <div className="w-5/6 border bg-teal-100 border-red-400 rounded-lg  mx-auto">
           <form className="mx-auto p-2" onSubmit={(e) => e.preventDefault()}>
             {/* Group Name */}
             <div className=" mb-2">
@@ -84,7 +84,7 @@ export default function Creategroup({ onClose, onSuccess }) {
             </div>
             <div className="flex justify-center">
               <button
-                className="px-4 py-1 bg-eb6134 text-white rounded-lg mb-4 mt-2"
+                className="px-4 py-1 bg-orange-500 text-white rounded-lg mb-4 mt-2"
                 type="submit"
                 onClick={handleCreateGroup}
               >
@@ -94,7 +94,7 @@ export default function Creategroup({ onClose, onSuccess }) {
           </form>
           <div className="flex justify-end">
             <button
-              className=" bg-eb6134 px-3 rounded-sm py-1.5 text-white"
+              className=" bg-orange-500 px-3 rounded-sm py-1.5 text-white"
               type="button"
               onClick={onClose}
             >

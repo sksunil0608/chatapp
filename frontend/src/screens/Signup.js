@@ -59,12 +59,12 @@ export default function Signup() {
   return (
     <div>
       <Navbar />
-      <div className="lg:bg-7a7d85 lg:bg-opacity-10">
+      <div className="lg:bg-gray-200 ">
         <div className=" p-4">
           <h1 className="text-5xl font-thin text-center">
             Welcome to VChat Instant Messaging
           </h1>
-          <div className=" mt-10 bg-ffffff max-w-md lg:max-w-screen-lg mx-auto border-2 border-black border-opacity-20 rounded-lg p-4 lg:p-8">
+          <div className=" mt-10 bg-white max-w-md lg:max-w-screen-lg mx-auto border-2 border-black border-opacity-20 rounded-lg p-4 lg:p-8">
             <form className="" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-2 gap-4">
                 {/* set Error Message Area */}
@@ -198,7 +198,7 @@ export default function Signup() {
 
               <div className="mx-auto">
                 <button
-                  className="mt-6 bg-eb6134 hover:bg-blue-700 font-bold text-white w-full py-3 lg:py-2 px-4 rounded-3xl"
+                  className="mt-6 bg-orange-500 hover:bg-blue-700 hover:text-white font-bold text-white w-full py-3 lg:py-2 px-4 rounded-3xl"
                   type="submit"
                   onClick={handleUserSignup}
                 >
@@ -218,7 +218,7 @@ export default function Signup() {
                 Policy, and Cookie Policy.
               </p>
               <button
-                className="mt-6 flex items-center hover:bg-blue-700  text-black w-full py-2 px-4 rounded-3xl outline outline-2"
+                className="mt-6 flex items-center hover:bg-blue-700 hover:text-white  text-black w-full py-2 px-4 rounded-3xl outline outline-2"
                 type="button"
               >
                 <div className="flex mx-auto">
@@ -255,7 +255,7 @@ export default function Signup() {
             {/* Login Page */}
             <div className="mt-5">
               <Link to="/login">
-                <button className="item-center hover:bg-blue-700 font-bold text-black w-full py-2 px-4 rounded-3xl outline outline-2">
+                <button className="item-center hover:bg-blue-700 hover:text-white font-bold text-black w-full py-2 px-4 rounded-3xl outline outline-2">
                   Already a User! Login
                 </button>
               </Link>

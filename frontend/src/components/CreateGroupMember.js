@@ -124,9 +124,9 @@ export default function CreateGroupMember({
 
   return (
     <div>
-      <div className="fixed inset-0 bg-7a7d85 bg-opacity-75 z-50 mt-24">
-        <div className="w-3/6 lg:w-2/6 border h-128 bg-e6ffff border-red-400 rounded-lg mt-2 mx-auto">
-          <h2 className="mt-2 text-center text-white bg-eb6134 border-2 border-red-500 rounded-lg mx-44 py-1">
+      <div className="fixed inset-0 bg-gray-400 bg-opacity-75 z-50 mt-24">
+        <div className="w-3/6 lg:w-2/6 border h-128 bg-teal-100 border-red-400 rounded-lg mt-2 mx-auto">
+          <h2 className="mt-2 text-center text-white bg-orange-500 border-2 border-red-500 rounded-lg mx-44 py-1">
             Select Members
           </h2>
 
@@ -188,7 +188,7 @@ export default function CreateGroupMember({
           {/* Action Buttons */}
           <div className="flex bottom-0 justify-end">
             <button
-              className="bg-eb6134 px-3 rounded-sm py-1.5 text-white"
+              className="bg-orange-500 px-3 rounded-sm py-1.5 text-white"
               type="button"
               onClick={onClose}
             >
@@ -196,7 +196,7 @@ export default function CreateGroupMember({
             </button>
 
             <button
-              className="bg-eb6134 px-3 rounded-sm py-1.5 text-white ml-2"
+              className="bg-orange-500 px-3 rounded-sm py-1.5 text-white ml-2"
               type="button"
               onClick={handleCreateGroupMember}
             >

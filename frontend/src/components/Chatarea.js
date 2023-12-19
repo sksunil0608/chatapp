@@ -2,8 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { getGroupMessages, postGroupMessage } from "../api/messageApi";
 import { format } from "date-fns-tz";
 import { io } from "socket.io-client";
-
+import { postGroupAttachmentUpload } from "../api/messageApi";
 import parseJwt from "../utils/jwt";
+import { getGroupAttachments } from "../api/messageApi";
+// Add these imports
+import {
+  fetchLocalAttachments,
+  storeAttachmentSessionStorage,
+} from "../utils/sessionStorage";
+
 import {
   fetchLocalMessage,
   storeMessageLocalStorage,
@@ -11,7 +18,7 @@ import {
 
 const Chatarea = ({ selectedGroup, token, updateSelectedGroup }) => {
   const decodedToken = parseJwt(token);
-  const userName = decodedToken.name
+  const userName = decodedToken.name;
 
   //--------------------------------Socket.io code here------------------------
   // Connect to the group chat namespace
@@ -21,14 +28,24 @@ const Chatarea = ({ selectedGroup, token, updateSelectedGroup }) => {
     },
   });
   //Here i am handling the if new messages are there
-  useEffect(() => {
-    groupChatSocket.on("new-message", (message,senderName) => {
-      storeMessageLocalStorage(message, selectedGroup.id, senderName);
-      setMessages((prevMessages) => [...prevMessages,message]);
-    });
 
+  useEffect(() => {
+    groupChatSocket.on("new-message", (message, senderName) => {
+      storeMessageLocalStorage(message, selectedGroup.id, senderName);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
     return () => {
       groupChatSocket.off("new-message");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupChatSocket]);
+  useEffect(() => {
+    groupChatSocket.on("new-attachments", (attachments, senderName) => {
+      storeAttachmentSessionStorage(attachments, selectedGroup.id, senderName);
+      setAttachments((prevAttachments) => [...prevAttachments, ...attachments]);
+    });
+    return () => {
+      groupChatSocket.off("new-attachments");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupChatSocket]);
@@ -36,16 +53,35 @@ const Chatarea = ({ selectedGroup, token, updateSelectedGroup }) => {
   //Handling if scrollbar is scrolling and reqest to load more message
   useEffect(() => {
     groupChatSocket.on("more-messages", (moreMessages) => {
-      setMessages((prevMessages) => [...moreMessages.reverse(), ...prevMessages]);
+      setMessages((prevMessages) => [
+        ...moreMessages.reverse(),
+        ...prevMessages,
+      ]);
     });
+
     return () => {
       groupChatSocket.off("more-messages");
     };
   }, [groupChatSocket]);
-//-------------------------------socket .io end ----------------------------------------
+
+  useEffect(() => {
+    groupChatSocket.on("more-attachments", (moreAttachments) => {
+      setAttachments((prevAttachments) => [
+        ...moreAttachments.reverse(),
+        ...prevAttachments,
+      ]);
+    });
+    return () => {
+      groupChatSocket.off("more-attachments");
+    };
+  });
+  //-------------------------------socket .io end ----------------------------------------
   const [messages, setMessages] = useState([]);
+  const [attachments, setAttachments] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [selectedAttachments, setSelectedAttachments] = useState([]);
+
   const containerRef = useRef();
 
   useEffect(() => {
@@ -83,13 +119,52 @@ const Chatarea = ({ selectedGroup, token, updateSelectedGroup }) => {
     }
   }, [selectedGroup, token, updateSelectedGroup, decodedToken.userId]);
 
-  const handleInputChange = (event) => {
+  useEffect(() => {
+    const handleLocalAttachments = async () => {
+      try {
+        // Fetch local attachments from session storage
+        const localAttachments = fetchLocalAttachments(selectedGroup.id);
+        if (localAttachments.length > 0) {
+          setAttachments(localAttachments);
+        } else {
+          // Fetch attachments from the backend
+          const startIndex = 0;
+          const apiAttachments = await getGroupAttachments(
+            selectedGroup.id,
+            token,
+            startIndex
+          );
+          // Store attachments in session storage
+          storeAttachmentSessionStorage(apiAttachments, selectedGroup.id);
+          setAttachments(apiAttachments);
+        }
+      } catch (error) {
+        console.error("Error fetching group attachments:", error);
+      }
+    };
+
+    if (selectedGroup) {
+      handleLocalAttachments();
+    }
+  }, [selectedGroup, token]);
+
+  const handleMessageInputChange = (event) => {
     setNewMessage(event.target.value);
   };
+  const handleAttachmentFileChange = async (event) => {
+    const selectedFiles = event.target.files;
+    setSelectedAttachments([...selectedFiles]);
+  };
+
+  useEffect(() => {
+    if (selectedAttachments.length > 0) {
+      postCreateAttachment();
+    }
+  }, [selectedAttachments]);
 
   const postCreateMessage = async () => {
     try {
-      const groupId = selectedGroup.id
+      const groupId = selectedGroup.id;
       const senderId = decodedToken.userId;
       const message_type = "txt";
 
@@ -102,76 +177,199 @@ const Chatarea = ({ selectedGroup, token, updateSelectedGroup }) => {
       // Use the postGroupMessage function from js
       const response = await postGroupMessage(groupId, messageDetails, token);
       if (response.status === 201) {
-        storeMessageLocalStorage(response.data.message, groupId,userName);
+        storeMessageLocalStorage(response.data.message, groupId, userName);
         setMessages((prevMessages) => [...prevMessages, response.data.message]);
         setNewMessage("");
-        groupChatSocket.emit("send-message", response.data.message, groupId,userName);
+        groupChatSocket.emit(
+          "send-message",
+          response.data.message,
+          groupId,
+          userName
+        );
       }
     } catch (error) {
       console.log("Error creating group message:", error);
     }
   };
 
+  const postCreateAttachment = async () => {
+    try {
+      setAttachmentLoading(true);
+      const groupId = selectedGroup.id;
+      const senderId = decodedToken.userId;
+      // Handle the case if no file selected
+      if (!selectedAttachments) {
+        console.log("No files selected");
+      }
+
+      const formData = new FormData();
+      selectedAttachments.forEach((attachment) => {
+        formData.append("attachments[]", attachment);
+      });
+      const attachmentDetails = {
+        senderId: senderId,
+        attachments: selectedAttachments,
+      };
+
+      const response = await postGroupAttachmentUpload(
+        groupId,
+        attachmentDetails,
+        token
+      );
+      if (response.status === 200) {
+        setAttachmentLoading(false);
+        storeAttachmentSessionStorage(
+          ...response.data.attachments,
+          groupId,
+          userName
+        );
+        setAttachments((prevMessages) => [
+          ...prevMessages,
+          ...response.data.attachments,
+        ]);
+
+        groupChatSocket.emit(
+          "send-attachments",
+          response.data.attachments,
+          groupId,
+          userName
+        );
+      }
+    } catch (error) {
+      setAttachmentLoading(false);
+      console.log("Erroor uploading attachment", error);
+    }
+  };
+
   const handleScroll = async () => {
     const container = containerRef.current;
     const isAtTop = container.scrollTop === 0;
+
     if (isAtTop && !isLoadingMore) {
+      setIsLoadingMore(true);
       try {
-        setIsLoadingMore(true);
         groupChatSocket.emit(
           "load-more-messages",
           selectedGroup.id,
           messages.length
         );
-
       } catch (error) {
         console.error("Error fetching more messages:", error);
+      }
+      try {
+        groupChatSocket.emit(
+          "load-more-attachments",
+          selectedGroup.id,
+          attachments.length
+        );
+      } catch (error) {
+        console.error("Error fetching more attachments:", error);
       } finally {
         setIsLoadingMore(false);
       }
     }
   };
+  const [allChats, setAllChats] = useState([]);
+  const [isAttachmentLoading, setAttachmentLoading] = useState(false);
+  useEffect(() => {
+    const combinedChats = [...attachments, ...messages].map((chat) => {
+      // Convert message or attachment to a common format
+
+      const tempKey = chat.id;
+
+      return {
+        id: tempKey,
+        sender_id: chat.sender_id ? chat.sender_id : decodedToken.userId,
+        sender_name: chat.sender_name
+          ? chat.sender_name
+          : decodedToken.userName,
+        message: chat.message || chat.file_name,
+        timestamp: chat.timestamp || new Date(),
+        file_url: chat.file_url ? chat.file_url : "",
+        file_type: chat.file_type ? chat.file_type : "",
+        type: chat.message ? "message" : "attachment",
+      };
+    });
+
+    // Sort combined chats based on timestamp
+    const sortedChats = combinedChats.sort(
+      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+    );
+    setAllChats(sortedChats);
+  }, [messages, attachments]);
+
   return (
-    <div className="hidden sm:block md:col-span-4 lg:col-span-4 bg-e6ffff">
+    <div className="hidden sm:block md:col-span-4 lg:col-span-4 bg-teal-100">
       <div
         ref={containerRef}
         onScroll={handleScroll}
         className="container h-128 max-h-screen overflow-y-auto relative"
       >
         {/* chats will show here */}
-        <div className="grid grid-cols-1 gap-4 pb-16">
-          {messages.length > 0 &&
-            messages.map((message) => (
+        <div className="grid grid-cols-1 gap-4 pb-4">
+          {allChats.length > 0 &&
+            allChats.map((chat) => (
               <div
-                key={message.id + selectedGroup.id}
+                key={chat.id + selectedGroup.id + chat.type + chat.sender_id}
                 className={`flex ${
-                  message.sender_id === decodedToken.userId
+                  chat.sender_id === decodedToken.userId
                     ? "justify-end"
                     : "justify-start"
                 } mx-10`}
               >
                 <div
-                  className={`rounded-lg p-2 px-4 w-2/6 ${
-                    message.sender_id === decodedToken.userId
-                      ? "bg-80ffbf"
-                      : "bg-ffb3ff"
+                  className={`rounded-lg p-2 px-4 w-fit ${
+                    chat.sender_id === decodedToken.userId
+                      ? "bg-emerald-300"
+                      : "bg-fuchsia-300"
                   }`}
                 >
                   <div>
                     <p
                       className={
-                        message.sender_id === decodedToken.userId
+                        chat.sender_id === decodedToken.userId
                           ? "text-xs"
                           : "text-blue-800 text-xs"
                       }
                     >
-                      {message.sender_id === decodedToken.userId
+                      {chat.sender_id === decodedToken.userId
                         ? "You"
-                        : message.sender_name}
+                        : chat.sender_name}
                     </p>
-                    <h1 className="">{message.message}</h1>
+                    <div className="flex items-center">
+                      {chat.file_type && chat.file_type.startsWith("image/") ? (
+                        <img
+                          src={chat.file_url}
+                          alt={chat.file_name}
+                          className="max-w-sm max-h-56"
+                        />
+                      ) : (
+                        <>
+                          <h1 className="">
+                            {chat.message ? chat.message : chat.file_name}
+                          </h1>
+                          {chat.file_url && (
+                            <div className="ml-4 flex relative items-center">
+                              <div className="rounded-full h-12 w-12 border-t-4 border-b-4 border-purple-500"></div>
+                              <a
+                                href={chat.file_url}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <img
+                                  src="/images/download.svg"
+                                  className="rounded-full h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                                  alt="Loading avatar"
+                                />
+                              </a>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
                     <p className="text-xs text-right">
-                      {format(new Date(message.timestamp), "HH:mm", {
+                      {format(new Date(chat.timestamp), `dd:MM:yyyy HH:mm`, {
                         timeZone: "Asia/Kolkata",
                       })}
                     </p>
@@ -180,35 +378,73 @@ const Chatarea = ({ selectedGroup, token, updateSelectedGroup }) => {
               </div>
             ))}
         </div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            postCreateMessage();
-          }}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <div className="fixed bottom-2 w-4/6 p-4">
-            <input
-              type="text"
-              id="message"
-              name="message"
-              className="border-2 w-3/4 py-2 px-3 rounded-lg"
-              placeholder="Type your message..."
-              value={newMessage}
-              onChange={handleInputChange}
-            />
-            <button
-              type="submit"
-              className="ml-4 px-4 py-2 bg-eb6134 text-white rounded-lg"
-            >
-              Send
-            </button>
+        {/* Loading indicator aligned to the right */}
+        {isAttachmentLoading && (
+          <div className="flex justify-end mx-10">
+            <div className="rounded-lg p-2 px-4 bg-emerald-300 flex items-center">
+              <p className="mr-2">Uploading Files</p>
+              <div className="relative">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-purple-500"></div>
+                <img
+                  src="https://www.svgrepo.com/show/509001/avatar-thinking-9.svg"
+                  className="rounded-full h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  alt="Loading avatar"
+                />
+              </div>
+            </div>
           </div>
-        </form>
+        )}
+        <div className="flex fixed bottom-2 items-center justify-center">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              postCreateMessage();
+            }}
+          >
+            <div className=" w-4/6 p-4 flex items-center">
+              <div className="border-2 w-3/4  rounded-lg bg-white">
+                <input
+                  type="text"
+                  id="message"
+                  name="message"
+                  className="py-2 px-3 w-10/12"
+                  placeholder="Type your message..."
+                  value={newMessage}
+                  onChange={handleMessageInputChange}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="ml-4 px-4 py-2 bg-orange-500 text-white rounded-lg"
+              >
+                Send
+              </button>
+            </div>
+          </form>
+
+          <label
+            htmlFor="attachments"
+            className="ml-2 md:ml-3 lg:ml-8 cursor-pointer  py-2 px-3"
+          >
+            <img
+              src="/images/attachment.svg"
+              alt="Attachment"
+              width="20"
+              height="20"
+            />
+          </label>
+
+          <input
+            type="file"
+            id="attachments"
+            name="attachments"
+            accept="image/*,video/*,audio/*"
+            multiple
+            className="hidden"
+            onChange={handleAttachmentFileChange}
+          />
+        </div>
       </div>
     </div>
   );

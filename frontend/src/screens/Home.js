@@ -117,7 +117,7 @@ export default function Home() {
           <Header />
           <hr />
           {/* Navbar above chat screen */}
-          <div className="flex items-center justify-between py-3 px-4 bg-7a7d85 bg-opacity-20 rounded-lg mt-1">
+          <div className="flex items-center justify-between py-3 px-4 bg-gray-300  rounded-lg mt-1">
             {/* Contacts Header */}
             <div className="flex items-start">
               <ul className="flex items-center space-x-10 mx-10">
@@ -198,13 +198,13 @@ export default function Home() {
                     />
                   )}
                   <button
-                    className="border-2 bg-eb6134 border-red-200 text-white px-2 py-1 rounded-lg ml-40"
+                    className="border-2 bg-orange-500 border-red-200 text-white px-2 py-1 rounded-lg ml-40"
                     onClick={openCreateGroupMemberPopup}
                   >
                     +Member
                   </button>
                   <button
-                    className="border-2 bg-eb6134 border-red-200 text-white px-2 py-1 rounded-lg"
+                    className="border-2 bg-orange-500 border-red-200 text-white px-2 py-1 rounded-lg"
                     onClick={openInviteLinkPopup}
                   >
                     Invite

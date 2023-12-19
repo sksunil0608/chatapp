@@ -29,7 +29,7 @@ const Contactarea = ({ setSelectedGroup,groups, updateSelectedGroup, selectedGro
 
 
     return (
-        <div className="col-span-6 md:col-span-2 lg:col-span-2 xl:col-span-2 bg-0000ff bg-opacity-5">
+        <div className="col-span-6 md:col-span-2 lg:col-span-2 xl:col-span-2 bg-blue-100">
             <div className="container h-screen max-h-screen overflow-y-auto">
                 {/* Search Contact */}
                 <form className="flex items-center mt-1">
@@ -83,7 +83,7 @@ const Contactarea = ({ setSelectedGroup,groups, updateSelectedGroup, selectedGro
                                 groups.map((group) => (
                                     <li
                                         key={group.id}
-                                        className={`flex items-center justify-between p-4 border-b border-gray-300 cursor-pointer ${selectedGroup && selectedGroup.id === group.id ? ' bg-0000ff bg-opacity-25' : ''}`}
+                                        className={`flex items-center justify-between p-4 border-b border-gray-300 cursor-pointer ${selectedGroup && selectedGroup.id === group.id ? ' bg-blue-800 bg-opacity-25' : ''}`}
                                         onClick={() => handleGroupClick(group)}
                                     >
                                         <div className="flex items-center">
@@ -100,7 +100,7 @@ const Contactarea = ({ setSelectedGroup,groups, updateSelectedGroup, selectedGro
                     )}
                 </div>
                 {/* Contact bottom area */}
-                <div className="fixed bottom-2 w-full sm:w-2/6 md:w-2/6 lg:w-2/6 border bg-ffb3ff bg-opacity-25 py-6 text-center">
+                <div className="fixed bottom-2 w-full sm:w-2/6 md:w-2/6 lg:w-2/6 border bg-fuchsia-300 py-6 text-center">
                     <button onClick={openCreateContactPopup}> Add Contacts</button>
                 </div>
             </div>

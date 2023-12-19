@@ -98,7 +98,7 @@ export default function Login() {
                     Forgot Password?
                   </Link>
                   <button
-                    className="mt-6 bg-eb6134 hover:bg-blue-700 font-bold text-white w-full py-3 px-4 rounded-3xl"
+                    className="mt-6 bg-orange-500 hover:bg-blue-700 font-bold text-white w-full py-3 px-4 rounded-3xl"
                     type="submit"
                     onClick={handleUserLogin}
                   >
@@ -118,7 +118,7 @@ export default function Login() {
                   Policy, and Cookie Policy.
                 </p>
                 <button
-                  className="mt-6 flex items-center hover:bg-blue-700  text-black w-full py-2 px-4 rounded-3xl outline outline-2"
+                  className="mt-6 flex items-center hover:bg-blue-700 hover:text-white text-black w-full py-2 px-4 rounded-3xl outline outline-2"
                   type="button"
                 >
                   <div className="flex mx-auto">
@@ -155,7 +155,7 @@ export default function Login() {
               {/* Signup Page */}
               <div className="mt-5">
                 <Link to="/signup">
-                  <button className="item-center hover:bg-blue-700 font-bold text-black w-full py-2 px-4 rounded-3xl outline outline-2">
+                  <button className="item-center hover:bg-blue-700 hover:text-white font-bold text-black w-full py-2 px-4 rounded-3xl outline outline-2">
                     New User! Register
                   </button>
                 </Link>

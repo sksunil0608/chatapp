@@ -49,21 +49,7 @@ module.exports = {
         'Segoe UI Symbol',
         'Noto Color Emoji'
       ]
-    },
-    backgroundColor: {
-      'eb6134': '#eb6134',
-      '0f172a':'#0f172a',
-      '7a7d85':'#7a7d85',
-      'ffffff':'#ffffff',
-      '0000ff':'#0000ff',
-      '33caff':'#33caff',
-      'e6ffff':'#e6ffff',
-      'ffb3ff':'#ffb3ff',
-      '008000':'#008000',
-      'eedd82':'#eedd82',
-      'ddff99':'#ddff99',
-      '80ffbf':'#80ffbf'
-    },
+    }, 
   },
   plugins: [],
 }

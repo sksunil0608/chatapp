@@ -15,6 +15,7 @@
     "concurrently": "^8.2.2"
   },
   "dependencies": {
+    "aws-sdk": "^2.1518.0",
     "date-fns-tz": "^2.0.0",
     "react-router-dom": "^6.20.1",
     "socket.io": "^4.7.2",

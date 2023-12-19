@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const navigate = useNavigate()
   const [isMenuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setMenuOpen(!isMenuOpen);
   };
+
+  const handleLogout = ()=>{
+    sessionStorage.clear()
+    localStorage.clear()
+    navigate("/login")
+  }
 
   return (
     <div>
@@ -45,10 +52,10 @@ export default function Header() {
 
           {/* Offcanvas menu */}
           {isMenuOpen && (
-            <div className="fixed inset-0 bg-7a7d85 bg-opacity-75 z-50 mt-24">
+            <div className="fixed inset-0 bg-gray-400 bg-opacity-75 z-50 mt-24">
               {/* Offcanvas menu content */}
               <div className="flex items-start justify-end h-screen">
-                <div className="bg-ffffff w-3/6 sm:w-2/6 md:w-2/6 lg:w-1/6 h-36 p-6 rounded-sm ">
+                <div className="bg-white w-3/6 sm:w-2/6 md:w-2/6 lg:w-1/6 h-36 p-6 rounded-sm ">
                   <ul className="">
                     {/* My Account */}
                     <li>
@@ -73,13 +80,8 @@ export default function Header() {
                     {/* Settings End */}
 
                     {/* Logout */}
-                    <li>
-                      <NavLink
-                        to="/login"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
+                    <li onClick={handleLogout} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                         Logout
-                      </NavLink>
                     </li>
                     {/* Logout End */}
                   </ul>
