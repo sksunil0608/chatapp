@@ -31,7 +31,14 @@ export default function Login() {
         
       }
     }catch(error){
-      setErrorMessage("Network Error")
+      if(error.response.status===404){
+        setErrorMessage("User is not Registered")
+      }
+      else if(error.response.status===401){
+        setErrorMessage("Authorization Error! Please Check Password")
+      }else{
+        setErrorMessage("Network Error")
+      }
     }
   }
   

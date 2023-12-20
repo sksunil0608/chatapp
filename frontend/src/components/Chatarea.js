@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from "react";
 import { getGroupMessages, postGroupMessage } from "../api/messageApi";
 import { format } from "date-fns-tz";
@@ -47,7 +48,6 @@ const Chatarea = ({ selectedGroup, token, updateSelectedGroup }) => {
     return () => {
       groupChatSocket.off("new-attachments");
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupChatSocket]);
 
   //Handling if scrollbar is scrolling and reqest to load more message
@@ -299,153 +299,158 @@ const Chatarea = ({ selectedGroup, token, updateSelectedGroup }) => {
   }, [messages, attachments]);
 
   return (
-    <div className="hidden sm:block md:col-span-4 lg:col-span-4 bg-teal-100">
-      <div
-        ref={containerRef}
-        onScroll={handleScroll}
-        className="container h-128 max-h-screen overflow-y-auto relative"
-      >
-        {/* chats will show here */}
-        <div className="grid grid-cols-1 gap-4 pb-4">
-          {allChats.length > 0 &&
-            allChats.map((chat) => (
+    <div
+      ref={containerRef}
+      onScroll={handleScroll}
+      className=" h-128 max-h-screen overflow-y-auto relative"
+    >
+      {/* chats will show here */}
+      <div className="grid grid-cols-1 gap-4 pb-4">
+        {allChats.length > 0 &&
+          selectedGroup &&
+          allChats.map((chat) => (
+            <div
+              key={chat.id + selectedGroup.id + chat.type + chat.sender_id}
+              className={`flex ${
+                chat.sender_id === decodedToken.userId
+                  ? "justify-end"
+                  : "justify-start"
+              } mx-10`}
+            >
               <div
-                key={chat.id + selectedGroup.id + chat.type + chat.sender_id}
-                className={`flex ${
+                className={`rounded-lg p-2 px-4 w-fit ${
                   chat.sender_id === decodedToken.userId
-                    ? "justify-end"
-                    : "justify-start"
-                } mx-10`}
+                    ? "bg-emerald-300"
+                    : "bg-fuchsia-300"
+                }`}
               >
-                <div
-                  className={`rounded-lg p-2 px-4 w-fit ${
-                    chat.sender_id === decodedToken.userId
-                      ? "bg-emerald-300"
-                      : "bg-fuchsia-300"
-                  }`}
-                >
-                  <div>
-                    <p
-                      className={
-                        chat.sender_id === decodedToken.userId
-                          ? "text-xs"
-                          : "text-blue-800 text-xs"
-                      }
-                    >
-                      {chat.sender_id === decodedToken.userId
-                        ? "You"
-                        : chat.sender_name}
-                    </p>
-                    <div className="flex items-center">
-                      {chat.file_type && chat.file_type.startsWith("image/") ? (
-                        <img
-                          src={chat.file_url}
-                          alt={chat.file_name}
-                          className="max-w-sm max-h-56"
-                        />
-                      ) : (
-                        <>
-                          <h1 className="">
-                            {chat.message ? chat.message : chat.file_name}
-                          </h1>
-                          {chat.file_url && (
-                            <div className="ml-4 flex relative items-center">
-                              <div className="rounded-full h-12 w-12 border-t-4 border-b-4 border-purple-500"></div>
-                              <a
-                                href={chat.file_url}
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                <img
-                                  src="/images/download.svg"
-                                  className="rounded-full h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                                  alt="Loading avatar"
-                                />
-                              </a>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-
-                    <p className="text-xs text-right">
-                      {format(new Date(chat.timestamp), `dd:MM:yyyy HH:mm`, {
-                        timeZone: "Asia/Kolkata",
-                      })}
-                    </p>
+                <div>
+                  <p
+                    className={
+                      chat.sender_id === decodedToken.userId
+                        ? "text-xs"
+                        : "text-blue-800 text-xs"
+                    }
+                  >
+                    {chat.sender_id === decodedToken.userId
+                      ? "You"
+                      : chat.sender_name}
+                  </p>
+                  <div className="flex items-center">
+                    {chat.file_type && chat.file_type.startsWith("image/") ? (
+                      <img
+                        src={chat.file_url}
+                        alt={chat.file_name}
+                        className="max-w-sm max-h-56"
+                      />
+                    ) : (
+                      <>
+                        <h1 className="">
+                          {chat.message ? chat.message : chat.file_name}
+                        </h1>
+                        {chat.file_url && (
+                          <div className="ml-4 flex relative items-center">
+                            <div className="rounded-full h-12 w-12 border-t-4 border-b-4 border-purple-500"></div>
+                            <a
+                              href={chat.file_url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <img
+                                src="/images/download.svg"
+                                className="rounded-full h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                                alt="Loading avatar"
+                              />
+                            </a>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
+
+                  <p className="text-xs text-right">
+                    {format(new Date(chat.timestamp), `dd:MM:yyyy HH:mm`, {
+                      timeZone: "Asia/Kolkata",
+                    })}
+                  </p>
                 </div>
               </div>
-            ))}
-        </div>
-        {/* Loading indicator aligned to the right */}
-        {isAttachmentLoading && (
-          <div className="flex justify-end mx-10">
-            <div className="rounded-lg p-2 px-4 bg-emerald-300 flex items-center">
-              <p className="mr-2">Uploading Files</p>
-              <div className="relative">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-purple-500"></div>
-                <img
-                  src="https://www.svgrepo.com/show/509001/avatar-thinking-9.svg"
-                  className="rounded-full h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                  alt="Loading avatar"
-                />
-              </div>
+            </div>
+          ))}
+      </div>
+      {/* Loading indicator aligned to the right */}
+      {isAttachmentLoading && (
+        <div className="flex justify-end mx-10">
+          <div className="rounded-lg p-2 px-4 bg-emerald-300 flex items-center">
+            <p className="mr-2">Uploading Files</p>
+            <div className="relative">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-purple-500"></div>
+              <img
+                src="https://www.svgrepo.com/show/509001/avatar-thinking-9.svg"
+                className="rounded-full h-8 w-8 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                alt="Loading avatar"
+              />
             </div>
           </div>
-        )}
-        <div className="flex fixed bottom-2 items-center justify-center">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              postCreateMessage();
-            }}
-          >
-            <div className=" w-4/6 p-4 flex items-center">
-              <div className="border-2 w-3/4  rounded-lg bg-white">
+        </div>
+      )}
+
+      {selectedGroup && (
+        <div className="fixed bottom-2 w-8/12">
+          <div className="mx-auto flex items-center justify-center">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                postCreateMessage();
+              }}
+              className="flex items-center bg-white rounded-lg w-5/6"
+            >
+              <div className="flex items-center">
+                <label
+                  htmlFor="attachments"
+                  className="cursor-pointer py-1 px-3 bg-white rounded-lg"
+                >
+                  <img
+                    src="/images/attachment.svg"
+                    alt="Attachment"
+                    width="20"
+                    height="20"
+                  />
+                </label>
+
                 <input
-                  type="text"
-                  id="message"
-                  name="message"
-                  className="py-2 px-3 w-10/12"
-                  placeholder="Type your message..."
-                  value={newMessage}
-                  onChange={handleMessageInputChange}
+                  type="file"
+                  id="attachments"
+                  name="attachments"
+                  accept="image/*,video/*,audio/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleAttachmentFileChange}
                 />
               </div>
+
+              <input
+                type="text"
+                id="message"
+                name="message"
+                className="py-1 px-3 flex-grow focus:outline-none"
+                placeholder="Type your message..."
+                value={newMessage}
+                onChange={handleMessageInputChange}
+              />
 
               <button
                 type="submit"
-                className="ml-4 px-4 py-2 bg-orange-500 text-white rounded-lg"
+                className="ml-2 px-4 py-1  rounded-lg relative"
               >
-                Send
+                <div className="flex items-center justify-center relative w-15 h-15 p-2 rounded-full ring-2 ring-green-500  bg-emerald-500 ">
+                  <img src="/images/send.png" className="" alt="Send" />
+                </div>
               </button>
-            </div>
-          </form>
-
-          <label
-            htmlFor="attachments"
-            className="ml-2 md:ml-3 lg:ml-8 cursor-pointer  py-2 px-3"
-          >
-            <img
-              src="/images/attachment.svg"
-              alt="Attachment"
-              width="20"
-              height="20"
-            />
-          </label>
-
-          <input
-            type="file"
-            id="attachments"
-            name="attachments"
-            accept="image/*,video/*,audio/*"
-            multiple
-            className="hidden"
-            onChange={handleAttachmentFileChange}
-          />
+            </form>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

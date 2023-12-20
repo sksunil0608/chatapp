@@ -49,6 +49,8 @@ export default function Signup() {
       // Handle network or other errors
       if (error && error.response.status === 409) {
         setErrorMessage("User already Exist")
+      }else if (error.response.status===400){
+        setErrorMessage("Please Fill all the details")
       }
       else {
         setErrorMessage("Network Error")
@@ -88,6 +90,7 @@ export default function Signup() {
                       placeholder="First Name"
                       value={signupDetails.fname}
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
@@ -128,6 +131,7 @@ export default function Signup() {
                       placeholder="Email"
                       value={signupDetails.email}
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
@@ -148,6 +152,7 @@ export default function Signup() {
                       placeholder="Phone"
                       value={signupDetails.phone}
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>
@@ -168,6 +173,7 @@ export default function Signup() {
                       placeholder="******************"
                       value={signupDetails.password}
                       onChange={handleInputChange}
+                      required
                     />
                     <p className="text-yellow-500 text-xs italic">
                       Please Enter Your Password.
@@ -191,6 +197,7 @@ export default function Signup() {
                       placeholder="******************"
                       value={signupDetails.confirm_password}
                       onChange={handleInputChange}
+                      required
                     />
                   </div>
                 </div>

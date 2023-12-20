@@ -44,7 +44,7 @@ export default function Home() {
     updateGroups(); // Fetch groups initially
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   // Create Group Popup thing
   const [isCreateGroupPopupOpen, setCreateGroupPopupOpen] = useState(false);
   const openCreateGroupPopup = () => {
@@ -175,7 +175,7 @@ export default function Home() {
             </div>
             {/* contact header end */}
             {/* Chat header */}
-            <div className="hidden md:flex  items-center mx-auto">
+            <div className="hidden md:block  items-center mx-auto">
               {selectedGroup && (
                 <div className="flex">
                   <button
@@ -231,23 +231,65 @@ export default function Home() {
             </div>
             {/* Chat header end */}
           </div>
-
-          <div className="grid grid-cols-6">
+          <div className="grid grid-cols-12">
             {/* Contacts Area */}
-            <Contactarea
-              setSelectedGroup={setSelectedGroup}
-              groups={groups}
-              updateSelectedGroup={updateSelectedGroup}
-              selectedGroup={selectedGroup}
-              isLoading={isLoadingGroups}
-            />
+            <div
+              className={`lg:col-span-4 bg-blue-100 ${
+                selectedGroup ? "hidden md:block" : "col-span-12"
+              }`}
+            >
+              <Contactarea
+                setSelectedGroup={setSelectedGroup}
+                groups={groups}
+                updateSelectedGroup={updateSelectedGroup}
+                selectedGroup={selectedGroup}
+                isLoading={isLoadingGroups}
+              />
+            </div>
             {/* Chat Area */}
-
-            <Chatarea
-              selectedGroup={selectedGroup}
-              token={token}
-              updateSelectedGroup={updateSelectedGroup}
-            />
+            <div
+              className={`lg:col-span-8 h-screen bg-blue-100 ${
+                selectedGroup ? "col-span-12" : "hidden md:block"
+              }`}
+            >
+              {selectedGroup && (
+                <div className="sm:w-full lg:hidden flex bg-blue-200 p-2 mb-2">
+                  <button onClick={() => setSelectedGroup(null)}>
+                    <img
+                      className="w-10 h-10 p-1 rounded-full  ring-gray-300 dark:ring-gray-500 ml-2"
+                      src="/images/back.svg"
+                      alt="Back Button"
+                    />
+                  </button>
+                  <div className="flex mx-auto">
+                    <button
+                      className="flex"
+                      onClick={openViewGroupMembrPopupOpen}
+                    >
+                      <h4 className="ml-2 text-2xl text-transform: uppercase">
+                        {selectedGroup.name}
+                      </h4>
+                      <img
+                        className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500 ml-2"
+                        src="/images/profile.jpeg"
+                        alt="Bordered avatar"
+                      />
+                    </button>
+                    {isViewGroupMemberPopupOpen && (
+                      <GroupMember
+                        onClose={closeViewGroupMembrPopupOpen}
+                        selectedGroup={selectedGroup}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+              <Chatarea
+                selectedGroup={selectedGroup}
+                token={token}
+                updateSelectedGroup={updateSelectedGroup}
+              />
+            </div>
           </div>
         </div>
       </div>
